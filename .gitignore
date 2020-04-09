@@ -1,4 +1,6 @@
 .env
 node_modules
 .mariadb-docker
-public
+*.png
+*.jpg
+!.gitkeep
