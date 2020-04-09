@@ -12,7 +12,7 @@ export default new Vuex.Store({
     showAddMemeModal: false,
     showVoteMemeModal: false,
     msg: '',
-    error: '',
+    error: ''
   },
   mutations: {
     setMemes (state, memesArray) {
@@ -20,11 +20,15 @@ export default new Vuex.Store({
     },
     setError (state, error) {
       state.error = error
-      setTimeout(() => state.error = '', 3000)
+      setTimeout(() => {
+        state.error = ''
+      }, 3000)
     },
     setMsg (state, msg) {
       state.msg = msg
-      setTimeout(() => state.msg = '', 3000)
+      setTimeout(() => {
+        state.msg = ''
+      }, 3000)
     },
     addMeme (state, memeData) {
       const existingMemeIndex = state.memes.findIndex(m => m.id === memeData.id)

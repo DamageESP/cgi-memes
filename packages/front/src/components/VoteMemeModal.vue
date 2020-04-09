@@ -9,7 +9,7 @@
         </div>
         <button type="button" class="voteMemeButton" @click="localLikeMeme()">dar like</button>
       </template>
-      <button type="button" class="cancelVoteButton" @click="toggleVoteMemeModal(false)">{{ liked ? 'amo que nos vamo' : 'cancelar' }}</button>
+      <button type="button" class="cancelVoteButton" @click="closeModal()">{{ liked ? 'amo que nos vamo' : 'cancelar' }}</button>
     </div>
   </div>
 </template>
@@ -31,6 +31,10 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleVoteMemeModal']),
+    closeModal () {
+      this.liked = false
+      this.toggleVoteMemeModal(false)
+    },
     localLikeMeme () {
       console.log(this.selectedMeme)
       const likeForm = new FormData()
@@ -43,7 +47,7 @@ export default {
         else this.liked = true
       })
     }
-  },
+  }
 }
 </script>
 

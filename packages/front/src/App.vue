@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="headerContainer">
-      <h1>
+      <h1 @click="loadAllMemes">
         <router-link to="/">CGI Memes</router-link>
       </h1>
       <span class="help">
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     ...mapMutations(['toggleAddMemeModal']),
-    ...mapActions(['loadAllMemes']),
+    ...mapActions(['loadAllMemes'])
   }
 }
 </script>
@@ -133,7 +133,7 @@ html, body {
     .msg {
       color: blue;
       background: rgba(0, 0, 255, .2);
-      
+
     }
   }
   .subirMemeCTA {
@@ -149,7 +149,7 @@ button {
   padding: 5px;
   background: transparent;
   font-size: inherit;
-  
+
   &:hover {
     background: rgba(0, 0, 0, .1);
   }
@@ -158,7 +158,7 @@ button {
     text-decoration: underline;
     font-weight: bold;
     color: purple;
-    
+
     &:hover {
       background: transparent;
     }

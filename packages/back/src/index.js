@@ -32,6 +32,7 @@ const pool = mysql.createPool({
 
 // In-memory array to prevent race conditions with slow DB i/o
 const peopleLiking = []
+const peopleUploading = []
 
 // Dirty DB init
 pool.query('CREATE TABLE IF NOT EXISTS memes (`id` MEDIUMINT NOT NULL AUTO_INCREMENT, `src` VARCHAR(255) NOT NULL, `title` VARCHAR(255) NOT NULL, `authorName` VARCHAR(255) NOT NULL, `authorEmail` VARCHAR(255) NOT NULL, `createdAt` VARCHAR(255) NOT NULL, `confirmed` VARCHAR(255) NOT NULL, PRIMARY KEY (id))')
@@ -55,7 +56,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 
 const getMeme = async memeId => {
   
-  const [[meme]] = await pool.query('SELECT COUNT(meme_likes.id) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 AND memes.id=?', [memeId])
+  const [[meme]] = await pool.query('SELECT SUM(IF(meme_likes.confirmed=1, 1, 0)) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.authorEmail, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 AND memes.id=? GROUP BY memes.id', [memeId])
   meme.src = `${process.env.VIRTUAL_HOST}${meme.src}`
   return meme
 }
@@ -73,14 +74,14 @@ const sendMail = async (email, type, memeTitle, actionId) => {
 
     if (type === 'upload') {
       await transporter.sendMail({
-        from: '"CGI Memes 🍑" <cgimemes420@gmail.com>', // sender address
-        to: email, // list of receivers
+        from: `"CGI Memes 🍑" <${process.env.EMAIL_ACCOUNT_USERNAME}>`, // sender address
+        to: process.env.NODE_ENV === 'production' ? email : process.env.EMAIL_ACCOUNT_USERNAME, // list of receivers
         ...memeConfirmationMail(memeTitle, actionId)
       })
     } else if (type === 'like') {
       await transporter.sendMail({
-        from: '"CGI Memes 🍑" <cgimemes420@gmail.com>', // sender address
-        to: email, // list of receivers
+        from: `"CGI Memes 🍑" <${process.env.EMAIL_ACCOUNT_USERNAME}>`, // sender address
+        to: process.env.NODE_ENV === 'production' ? email : process.env.EMAIL_ACCOUNT_USERNAME, // list of receivers
         ...likeConfirmationMail(memeTitle, actionId)
       })
     }
@@ -118,7 +119,7 @@ const consumeAction = async actionId => {
 }
 
 app.get('/gallery', async (req, res) => {
-  const [memes] = await pool.query('SELECT COUNT(meme_likes.id) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 AND meme_likes.confirmed=1')
+  const [memes] = await pool.query('SELECT SUM(IF(meme_likes.confirmed=1, 1, 0)) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 GROUP BY memes.id')
   if (memes.filter(m => m.id !== null).length) {
     res.json(memes.map(meme => {
       meme.src = `${process.env.VIRTUAL_HOST}${meme.src}`
@@ -133,6 +134,7 @@ app.post('/like/:memeId', async (req, res) => {
   if (!validateEmail(voterEmail)) return res.status(401).send('only cgi email addresses are allowed')
   const meme = await getMeme(req.params.memeId)
   if (!meme) return res.status(404).send('meme not found')
+  if (meme.authorEmail === voterEmail) return res.status(400).send('a nadie le gusta la gente que le da like a sus propios memes')
   peopleLiking.push(voterEmail)
   const [[likedBefore]] = await pool.query('SELECT voterEmail FROM meme_likes WHERE voterEmail=? AND memeId=?', [voterEmail, req.params.memeId])
   if (likedBefore) {
@@ -158,11 +160,13 @@ app.post('/subir', async (req, res) => {
   const memeAuthorName= req.body.memeAuthorName || 'Unknown meme lord'
   const memeAuthorEmail= req.body.memeAuthorEmail
   const memeFile = req.files.memeFile
-  
+
+  if (peopleUploading.includes(memeAuthorEmail)) return res.status(401).send('dont shoot so fast cowboi')
   if (!memeFile.size) return res.status(400).send('no file was sent')
   if (memeFile.mimetype !== 'image/png' && memeFile.mimetype !== 'image/jpeg') return res.status(400).send('formato de archivo invalido')
   if (!memeAuthorEmail|| !validateEmail(memeAuthorEmail)) return res.status(401).send('email invalido (only @cgi.com)')
 
+  peopleUploading.push(memeAuthorEmail)
   const ext = memeFile.name.split('.')[memeFile.name.split('.').length - 1]
   const memePublicPath = `/meme/cgimeme${Math.random() * 1000}.${ext}`
   memeFile.mv(path.join(__dirname, `../public${memePublicPath}`)
@@ -176,12 +180,14 @@ app.post('/subir', async (req, res) => {
       sendMail(memeAuthorEmail, 'upload', memeTitle, actionId)
       res.send('ok')
     } else res.status(500).send('error al crear el meme')
+    peopleUploading.splice(peopleUploading.indexOf(memeAuthorEmail), 1)
   })
 })
 
 app.get('/meme/:memeId', async (req, res) => {
   const meme = await getMeme(req.params.memeId)
   if (!meme) return res.status(404).send('meme not found')
+  delete meme.authorEmail // lil bit o privacy
   res.json(meme)
 })
 

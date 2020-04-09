@@ -1,7 +1,7 @@
 <template>
   <div class="galleryPage">
     <h3 v-if="!memes.length && !loadingMemes">No hay memes todavía. <button class="linkButton" type="button" @click="toggleAddMemeModal(true)">¡Sé el primero!</button></h3>
-    <h3 v-if="!memes.length && loadingMemes">Cargando memes...</h3>
+    <h3 class="loadingMemes" v-if="loadingMemes">Cargando memes...</h3>
     <div class="gallery">
       <Meme v-for="(meme, i) in memes" :key="i" :meme="meme" />
     </div>
@@ -19,13 +19,18 @@ export default {
     ...mapState(['memes', 'loadingMemes'])
   },
   methods: {
-    ...mapMutations(['toggleAddMemeModal']),
+    ...mapMutations(['toggleAddMemeModal'])
   },
-  components: { Meme },
+  components: { Meme }
 }
 </script>
 
 <style scoped lang="scss">
+.loadingMemes {
+  margin: 15px 0;
+  text-align: center;
+}
+
 .gallery {
   display: grid;
   grid-template-columns: .5fr .5fr;
@@ -33,5 +38,10 @@ export default {
   transition: all .5s ease-in-out;
   column-gap: 10px;
   row-gap: 10px;
+
+  @media screen and (min-width: 1024px) {
+    column-gap: 20px;
+    row-gap: 20px;
+  }
 }
 </style>
