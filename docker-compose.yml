@@ -9,7 +9,7 @@ services:
       - "443:443"
     volumes:
       - certs:/etc/nginx/certs
-      - vhostd:/etc/nginx/vhost.d
+      - ./packages/nginx-custom/vhostd:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks: 
