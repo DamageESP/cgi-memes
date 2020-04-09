@@ -1,0 +1,6 @@
+FROM node:lts-alpine
+WORKDIR /usr/src/back
+COPY . .
+EXPOSE 8081
+RUN npm i --silent
+CMD npm run dev

@@ -1,0 +1,124 @@
+<template>
+  <div class="addMemeModal" :class="{ open: showAddMemeModal }">
+    <div class="addMemeForm">
+      <span v-if="uploaded" class="successMessage">Tu meme ha sido subido correctamente. Ahora te enviaremos un email para confirmarlo. Mientras no sea confirmado, no se verá en la lista de memes</span>
+      <div v-else>
+        <div class="formGroup">
+          <label for="memeFile">Archivo (solo .png y .jpg)</label>
+          <input type="file" name="memeFile" id="memeFile" @change="processFile($event)">
+        </div>
+        <div class="formGroup">
+          <label for="memeAuthorEmail">Email del autor*</label>
+          <input type="text" name="memeAuthorEmail" id="memeAuthorEmail" v-model="memeAuthorEmail" placeholder="Privado. Solo emails @cgi.com">
+        </div>
+        <div class="formGroup">
+          <label for="memeAuthorName">Nombre del autor (opcional)</label>
+          <input type="text" name="memeAuthorName" id="memeAuthorName" v-model="memeAuthorName" placeholder="Público">
+        </div>
+        <div class="formGroup">
+          <label for="memeTitle">Título del meme (opcional)</label>
+          <input type="text" name="memeTitle" id="memeTitle" v-model="memeTitle" placeholder="Público">
+        </div>
+      </div>
+      <button type="button" class="submitMemeButton" @click="subirMeme()">subir momaso</button>
+      <button type="button" class="cancelButton" @click="toggleAddMemeModal(false)">{{ uploaded ? 'cerrar' : 'cancelar' }}</button>
+      <button type="button" @click="uploaded = false" v-if="uploaded">subir otro</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations, mapActions } from 'vuex'
+import api from '../lib/api'
+
+export default {
+  name: 'AddMemeModal',
+  data () {
+    return {
+      memeFile: '',
+      memeAuthorEmail: '',
+      memeAuthorName: '',
+      memeTitle: '',
+      uploaded: false
+    }
+  },
+  computed: {
+    ...mapState(['showAddMemeModal'])
+  },
+  methods: {
+    ...mapMutations(['toggleAddMemeModal', 'setError', 'setMsg']),
+    ...mapActions(['loadAllMemes']),
+    processFile (event) {
+      this.memeFile = event.target.files[0]
+    },
+    subirMeme () {
+      const memeData = {
+        memeFile: this.memeFile,
+        memeAuthorEmail: this.memeAuthorEmail,
+        memeAuthorName: this.memeAuthorName,
+        memeTitle: this.memeTitle,
+        createdAt: Date.now()
+      }
+      const formData = new FormData()
+      for (const name in memeData) {
+        formData.append(name, memeData[name])
+      }
+      api('/subir', {
+        method: 'POST',
+        body: formData
+      }).then(r => {
+        if (r.status === 200) {
+          this.uploaded = true
+          r.text().then(this.setMsg)
+          this.loadAllMemes()
+        } else r.text().then(this.setError)
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.addMemeModal {
+  display: none;
+  position: fixed;
+  flex-direction: column;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(rgba(255, 255, 255, .3), rgba(0, 0, 0, .8));
+
+  &.open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .addMemeForm {
+    background: white;
+    border:  2px solid gray;
+    border-radius: 5px;
+    box-shadow: 0 0 100px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    .successMessage {
+      margin-bottom: 15px;
+    }
+    .formGroup {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      & > * {
+        flex-basis: 50%;
+      }
+    }
+    .cancelButton {
+      background: rgba(255, 0, 0, .2);
+      margin-top: 5px;
+    }
+  }
+}
+</style>

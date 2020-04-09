@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  
+  db:
+    image: mariadb:5.5.64
+    networks: 
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PW}
+      - MYSQL_DATABASE=${DB_NAME}
+    ports:
+      - 3307:3306 # remove in prod
+    volumes:
+      - ./.mariadb-docker:/var/lib/mysql
+
+  front:
+    build:
+      context: ./packages/front
+      dockerfile: Dockerfile.dev
+    networks:
+      - default
+    environment:
+      - BACK_URL=http://localhost:8081
+      - CHOKIDAR_USEPOLLING=true
+      - HOST=0.0.0.0
+    ports:
+      - 8080:8080
+    volumes:
+      - ./packages/front:/usr/src/front:rw
+
+  back:
+    build:
+      context: ./packages/back
+      dockerfile: Dockerfile.prod
+    networks:
+      - backend
+    environment: 
+      - FRONT_URL=http://localhost:8080
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PW=${DB_PW}
+      - DB_NAME=${DB_NAME}
+      - EMAIL_ACCOUNT_USERNAME=${EMAIL_ACCOUNT_USERNAME}
+      - VIRTUAL_HOST=http://localhost:8081
+      - EMAIL_ACCOUNT_PW=${EMAIL_ACCOUNT_PW}
+    ports:
+      - 8081:8081
+    volumes:
+      - ./packages/back:/usr/src/back:rw
+    
+networks:
+  default:
+  backend:

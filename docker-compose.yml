@@ -1,0 +1,87 @@
+version: '3'
+
+services:
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks: 
+      - default
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    networks: 
+      - default
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  
+  db:
+    image: mariadb:5.5.64
+    networks: 
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PW}
+      - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - ./.mariadb-docker:/var/lib/mysql
+
+  front:
+    build: ./packages/front
+    networks:
+      - default
+    environment:
+      - BACK_URL=${BACK_VIRTUAL_HOST}
+      - NODE_ENV=${NODE_ENV}
+      - VIRTUAL_HOST=${FRONT_VIRTUAL_HOST}
+      - VIRTUAL_PORT=${FRONT_VIRTUAL_PORT}
+      - LETSENCRYPT_HOST=${FRONT_VIRTUAL_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    volumes:
+      - ./packages/front:/usr/src/front:rw
+
+  back:
+    deploy:
+      restart_policy:
+        condition: on-failure
+    build: ./packages/back
+    networks:
+      - backend
+      - default
+    environment:
+      - FRONT_URL=${FRONT_VIRTUAL_HOST}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PW=${DB_PW}
+      - DB_NAME=${DB_NAME}
+      - NODE_ENV=${NODE_ENV}
+      - VIRTUAL_HOST=${BACK_VIRTUAL_HOST}
+      - VIRTUAL_PORT=${BACK_VIRTUAL_PORT}
+      - LETSENCRYPT_HOST=${BACK_VIRTUAL_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - EMAIL_ACCOUNT_USERNAME=${EMAIL_ACCOUNT_USERNAME}
+      - EMAIL_ACCOUNT_PW=${EMAIL_ACCOUNT_PW}
+    volumes:
+      - ./packages/back:/usr/src/back:rw
+    
+networks:
+  default:
+  backend:
+volumes: 
+  certs:
+  html:
+  vhostd:
