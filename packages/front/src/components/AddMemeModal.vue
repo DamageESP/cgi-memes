@@ -105,14 +105,26 @@ export default {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    max-width: 600px;
+    max-width: 100vw;
+    width: 100vw;
+    box-sizing: border-box;
+
+    @media screen and (min-width: 1024px) {
+      max-width: 600px;
+    }
+
     .successMessage {
       margin-bottom: 15px;
     }
     .formGroup {
       padding: 10px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+
+      @media screen and (min-width: 1024px) {
+        align-items: center;
+        flex-direction: row;
+      }
       & > * {
         flex-basis: 50%;
       }

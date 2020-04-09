@@ -49,18 +49,21 @@ export default {
 }
 
 .facet {
-  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 35px;
 }
 
 .gallery {
   display: grid;
-  grid-template-columns: .5fr .5fr;
-  grid-auto-rows: 350px;
+  grid-template-columns: 1fr;
   transition: all .5s ease-in-out;
   column-gap: 10px;
   row-gap: 10px;
 
   @media screen and (min-width: 1024px) {
+    grid-template-columns: .5fr .5fr;
     column-gap: 20px;
     row-gap: 20px;
   }

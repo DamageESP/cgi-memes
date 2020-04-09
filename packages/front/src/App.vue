@@ -18,7 +18,7 @@
       </span>
       <button type="button" class="subirMemeCTA" @click="toggleAddMemeModal(true)">Subir meme</button>
     </div>
-    <div class="msgsContainer">
+    <div class="msgsContainer" v-if="error || msg">
       <span class="error" v-if="error"><strong>Error:</strong> {{ error }}</span>
       <span class="msg" v-if="msg">{{ msg }}</span>
     </div>
@@ -69,26 +69,41 @@ html, body {
   max-width: 800px;
   margin: 0 auto;
   color: #333;
-  padding: 5px;
+  padding: 10px;
   font-size: 14px;
 
   @media screen and (min-width: 1024px) {
     font-size: 16px;
-    padding: 15px;
   }
 
   .headerContainer {
     display: flex;
     align-items: center;
     margin-bottom: 30px;
+    flex-wrap: wrap;
+
+    @media screen and (min-width: 362px) {
+      flex-wrap: nowrap;
+    }
 
     h1 {
       flex-grow: 1;
+      font-size: 16px;
+      white-space: nowrap;
+      
+      @media screen and (min-width: 1024px) {
+        font-size: 24px;
+      }
     }
 
     .help {
-      display: flex;
       color: lightsteelblue;
+      order: 2;
+
+      @media screen and (min-width: 362px) {
+        order: unset;
+      }
+
       &:hover .infoModal {
         visibility: visible;
       }
@@ -104,9 +119,14 @@ html, body {
         border-radius: 5px;
         background: white;
         padding: 5px;
-        margin-left: -364px;
-        margin-top: 35px;
-        width: 350px;
+        margin-left: -7px;
+        margin-top: 5px;
+        width: 300px;
+
+        @media screen and (min-width: 1024px) {
+          margin-left: -100px;
+          margin-top: 15px;
+        }
 
         ol {
           list-style-position: inside;
@@ -141,15 +161,6 @@ html, body {
   }
 }
 button {
-  font-family: 'Fira Code', sans-serif;
-  cursor: pointer;
-  outline: none;
-  border: 1px solid gray;
-  border-radius: 5px;
-  padding: 5px;
-  background: transparent;
-  font-size: inherit;
-
   &:hover {
     background: rgba(0, 0, 0, .1);
   }
@@ -163,5 +174,21 @@ button {
       background: transparent;
     }
   }
+}
+input[type="text"],
+input[type="button"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+button,
+select {
+  font-family: 'Fira Code', sans-serif;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+  background: transparent;
+  font-size: inherit;
 }
 </style>

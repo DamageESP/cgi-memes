@@ -1,9 +1,9 @@
 <template>
-  <div class="meme">
+  <div class="meme" :class="{ fullSize }">
     <h3 class="memeTitle"><router-link :to="`/view/${meme.id}`">"{{ meme.title }}"</router-link></h3>
     <div class="imgContainer">
       <router-link :to="`/view/${meme.id}`">
-          <img :src="meme.src" :alt="meme.title" :class="{ fullSize }">
+          <img :src="meme.src" :alt="meme.title">
       </router-link>
     </div>
     <div class="details">
@@ -53,6 +53,15 @@ export default {
   &:hover {
     background-color: #f0f0f0;
   }
+
+  &.fullSize {
+    .imgContainer {
+      a {
+        max-height: unset;
+        height: auto;
+      }
+    }
+  }
   .memeTitle {
     font-style: italic;
     margin-bottom: 15px;
@@ -64,13 +73,18 @@ export default {
     display: flex;
     justify-content: center;
 
+    a {
+      width: 100%;
+      max-height: 250px;
+      height: 250px;
+      overflow: hidden;
+      display: flex;
+    }
+
     img {
       object-fit: contain;
-      max-width:100%;
-      max-height:100%;
-      &.fullSize {
-        max-height: unset;
-      }
+      max-width: 100%;
+      width: 100%;
     }
   }
   .details {

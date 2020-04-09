@@ -1,9 +1,13 @@
 const express = require('express')
+const https = require('https')
 const cors = require('cors')
 const path = require('path')
 const mysql = require('mysql2/promise')
 const fileUpload = require('express-fileupload')
 const nodemailer = require('nodemailer')
+const fs = require('fs')
+const key = fs.readFileSync('/usr/src/certs/key.pem')
+const cert = fs.readFileSync('/usr/src/certs/cert.pem')
 
 const port = process.env.NODE_ENV === 'production' ? 80 : 8081
 
@@ -199,6 +203,6 @@ app.get('/confirm/:actionId', async (req, res) => {
   else res.status(500).send('no se ha podido confirmar la acción')
 })
 
-app.listen(port, () => {
+https.createServer({key: key, cert: cert }, app).listen(port, () => {
   console.log(`listenin on ${port}`)
 })

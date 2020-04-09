@@ -40,7 +40,6 @@ export default new Vuex.Store({
       state.showAddMemeModal = modalShown
     },
     setSelectedMeme (state, memeId) {
-      console.log('setting selected meme')
       state.selectedMeme = state.memes.find(m => m.id === memeId)
     },
     toggleVoteMemeModal (state, modalShown) {
