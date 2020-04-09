@@ -203,6 +203,12 @@ app.get('/confirm/:actionId', async (req, res) => {
   else res.status(500).send('no se ha podido confirmar la acción')
 })
 
-https.createServer({key: key, cert: cert }, app).listen(port, () => {
-  console.log(`listenin on ${port}`)
-})
+if (process.env.NODE_ENV === 'production') {
+  app.listen(port, () => {
+    console.log(`listenin on ${port}`)
+  })
+} else {
+  https.createServer({key: key, cert: cert }, app).listen(port, () => {
+    console.log(`listenin on ${port}`)
+  })
+}
