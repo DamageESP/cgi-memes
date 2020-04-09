@@ -12,14 +12,14 @@ const validateEmail = email => email.split('@') && email.split('@')[1] === 'cgi.
 const likeConfirmationMail = (memeTitle, actionId) => {
   return {
     subject: `Confirma tu like al meme "${memeTitle}"👍`,
-    html: `<p>Completa el ciclo del amor ❤️, simplemente haz clic en este enlace! ➡️ <a href="${process.env.FRONT_URL}/confirm/${actionId}">Confirmar voto 🔗</a></p>`,
+    html: `<p>Completa el ciclo del amor ❤️, simplemente haz clic en este enlace! ➡️ <a href="${process.env.FRONT_URL}/#/confirm/${actionId}">Confirmar voto 🔗</a></p>`,
   }
 }
 
 const memeConfirmationMail = (memeTitle, actionId) => {
   return {
     subject: `Confirma tu meme "${memeTitle}" y empieza a hacer que lluevan los likes! 🍆`,
-    html: `<p>¿Estás listo para ser el/la más popular de la ofi? Estás a un solo clic... entra en este enlace! ➡️ <a href="${process.env.FRONT_URL}/confirm/${actionId}">Confirmar meme</a></p>`,
+    html: `<p>¿Estás listo para ser el/la más popular de la ofi? Estás a un solo clic... entra en este enlace! ➡️ <a href="${process.env.FRONT_URL}/#/confirm/${actionId}">Confirmar meme</a></p>`,
   }
 }
 
