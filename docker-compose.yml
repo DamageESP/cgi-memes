@@ -58,7 +58,8 @@ services:
       - backend
       - default
     command: ash -c './wait-for db:3306 -- node ./src/index.js'
-    depends_on: db
+    depends_on:
+      - db
     environment:
       - FRONT_URL=${FRONT_VIRTUAL_HOST}
       - DB_HOST=${DB_HOST}
