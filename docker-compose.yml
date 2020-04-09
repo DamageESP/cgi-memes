@@ -55,9 +55,6 @@ services:
       - ./packages/front:/usr/src/front:rw
 
   back:
-    deploy:
-      restart_policy:
-        condition: on-failure
     build: ./packages/back
     networks:
       - backend

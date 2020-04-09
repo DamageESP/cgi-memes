@@ -5,4 +5,4 @@ COPY package*.json ./
 RUN npm install --silent
 COPY . .
 EXPOSE 80
-CMD node ./src/index.js
+CMD npx forever start ./src/index.js
