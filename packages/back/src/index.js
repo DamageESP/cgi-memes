@@ -57,7 +57,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 const getMeme = async memeId => {
   
   const [[meme]] = await pool.query('SELECT SUM(IF(meme_likes.confirmed=1, 1, 0)) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.authorEmail, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 AND memes.id=? GROUP BY memes.id', [memeId])
-  meme.src = `${process.env.VIRTUAL_HOST}${meme.src}`
+  meme.src = `https://${process.env.VIRTUAL_HOST}${meme.src}`
   return meme
 }
 
@@ -122,7 +122,7 @@ app.get('/gallery', async (req, res) => {
   const [memes] = await pool.query('SELECT SUM(IF(meme_likes.confirmed=1, 1, 0)) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 GROUP BY memes.id')
   if (memes.filter(m => m.id !== null).length) {
     res.json(memes.map(meme => {
-      meme.src = `${process.env.VIRTUAL_HOST}${meme.src}`
+      meme.src = `https://${process.env.VIRTUAL_HOST}${meme.src}`
       return meme
     }))
   } else res.json([])
