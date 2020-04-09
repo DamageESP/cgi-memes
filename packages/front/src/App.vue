@@ -124,6 +124,10 @@ html, body {
         margin-top: 5px;
         width: 300px;
 
+        @media screen and (min-width: 362px) {
+          margin-left: -70px;
+        }
+
         @media screen and (min-width: 1024px) {
           margin-left: -150px;
           margin-top: 15px;
