@@ -57,7 +57,7 @@ services:
     networks:
       - backend
       - default
-    command: ash -c './wait-for db:3306 -- node ./src/index.js'
+    command: sh -c './wait-for db:3306 -- node ./src/index.js'
     depends_on:
       - db
     environment:
