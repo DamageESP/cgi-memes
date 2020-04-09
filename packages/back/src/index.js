@@ -169,9 +169,11 @@ app.post('/subir', async (req, res) => {
   peopleUploading.push(memeAuthorEmail)
   const ext = memeFile.name.split('.')[memeFile.name.split('.').length - 1]
   const memePublicPath = `/meme/cgimeme${Math.random() * 1000}.${ext}`
-  memeFile.mv(path.join(__dirname, `../public${memePublicPath}`)
-  , async err => {
-    if (err) return res.status(500).send(err)
+  memeFile.mv(path.join(__dirname, `../public${memePublicPath}`), async err => {
+    if (err) {
+      peopleUploading.splice(peopleUploading.indexOf(memeAuthorEmail), 1)
+      return res.status(500).send(err)
+    }
     
     const [insertedMeme] = await pool.query('INSERT INTO memes (src, title, authorName, authorEmail, createdAt, confirmed) VALUES (?, ?, ?, ?, ?, ?)', [memePublicPath, memeTitle, memeAuthorName, memeAuthorEmail, Date.now(), 0])
   
