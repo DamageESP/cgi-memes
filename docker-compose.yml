@@ -51,8 +51,6 @@ services:
       - VIRTUAL_PORT=${FRONT_VIRTUAL_PORT}
       - LETSENCRYPT_HOST=${FRONT_VIRTUAL_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    volumes:
-      - ./packages/front:/usr/src/front:rw
 
   back:
     build: ./packages/back
@@ -73,7 +71,7 @@ services:
       - EMAIL_ACCOUNT_USERNAME=${EMAIL_ACCOUNT_USERNAME}
       - EMAIL_ACCOUNT_PW=${EMAIL_ACCOUNT_PW}
     volumes:
-      - ./packages/back:/usr/src/back:rw
+      - uploads:/usr/src/back/public:rw
     
 networks:
   default:
@@ -82,3 +80,4 @@ volumes:
   certs:
   html:
   vhostd:
+  uploads:
