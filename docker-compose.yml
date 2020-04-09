@@ -45,7 +45,7 @@ services:
     networks:
       - default
     environment:
-      - BACK_URL=${BACK_VIRTUAL_HOST}
+      - BACK_URL=https://${BACK_VIRTUAL_HOST}
       - NODE_ENV=${NODE_ENV}
       - VIRTUAL_HOST=${FRONT_VIRTUAL_HOST}
       - VIRTUAL_PORT=${FRONT_VIRTUAL_PORT}
