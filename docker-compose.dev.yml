@@ -32,7 +32,7 @@ services:
   back:
     build:
       context: ./packages/back
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     networks:
       - backend
     environment: 
