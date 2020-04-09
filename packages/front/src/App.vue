@@ -61,6 +61,7 @@ export default {
 html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 #app {
   font-family: 'Fira Code', monospace, sans-serif;
@@ -124,7 +125,7 @@ html, body {
         width: 300px;
 
         @media screen and (min-width: 1024px) {
-          margin-left: -100px;
+          margin-left: -150px;
           margin-top: 15px;
         }
 
