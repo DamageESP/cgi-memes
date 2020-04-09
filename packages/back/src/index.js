@@ -5,9 +5,6 @@ const path = require('path')
 const mysql = require('mysql2/promise')
 const fileUpload = require('express-fileupload')
 const nodemailer = require('nodemailer')
-const fs = require('fs')
-const key = fs.readFileSync('/usr/src/certs/key.pem')
-const cert = fs.readFileSync('/usr/src/certs/cert.pem')
 
 const port = process.env.NODE_ENV === 'production' ? 80 : 8081
 
@@ -208,6 +205,9 @@ if (process.env.NODE_ENV === 'production') {
     console.log(`listenin on ${port}`)
   })
 } else {
+  const fs = require('fs')
+  const key = fs.readFileSync('/usr/src/certs/key.pem')
+  const cert = fs.readFileSync('/usr/src/certs/cert.pem')
   https.createServer({key: key, cert: cert }, app).listen(port, () => {
     console.log(`listenin on ${port}`)
   })
