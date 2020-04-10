@@ -61,7 +61,7 @@ export default {
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 #app {
   font-family: 'Fira Code', monospace, sans-serif;
