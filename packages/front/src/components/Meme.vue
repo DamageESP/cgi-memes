@@ -1,20 +1,22 @@
 <template>
   <div class="meme" :class="{ fullSize }">
-    <h3 class="memeTitle"><router-link :to="`/view/${meme.id}`">"{{ meme.title }}"</router-link></h3>
+    <h2 class="memeTitle"><router-link :to="`/view/${meme.id}`">{{ meme.title }}</router-link></h2>
     <div class="imgContainer">
       <router-link :to="`/view/${meme.id}`">
           <img :src="meme.src" :alt="meme.title">
       </router-link>
     </div>
-    <div class="details">
-      <span class="author"><span>Subido por: </span>{{ meme.authorName }}</span>
-      <span class="timestamp">{{ meme.createdAt|asDate }}</span>
-    </div>
-    <div class="controlButtons">
-      <button type="button" title="Me gusta" @click="likeMeme()">
-        <span class="icon">❤️</span>
-        <span class="totalLikes">({{ meme.likes || 0 }})</span>
-      </button>
+    <div class="bottomInfo">
+      <div class="details">
+        <span class="author"><strong>Subido por: </strong>{{ meme.authorName }}</span>
+        <span class="timestamp">{{ meme.createdAt|asDate }}</span>
+      </div>
+      <div class="controlButtons">
+        <button type="button" title="Me gusta" @click="likeMeme()">
+          <span class="icon">❤️</span>
+          <span class="totalLikes">({{ meme.likes || 0 }})</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -46,15 +48,44 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, .3);
   background: white;
+  border: 1px solid #333;
+  border-left: 15px solid #333;
   transition: background ease .2s;
+  transform: rotate3d(0, 0, 1, 0deg);
 
-  &:hover {
-    background-color: #f0f0f0;
+  &:not(.fullSize):hover {
+    background: linear-gradient(45deg, red, magenta);
+    color: white;
+    transform: rotate3d(0, 0, 1, 2deg);
+    transition: transform .1s ease;
+
+    .memeTitle {
+      background: whitesmoke;
+
+      a {
+        color: #333;
+      }
+    }
+    .bottomInfo {
+      .details {
+        .timestamp {
+          color: whitesmoke;
+        }
+      }
+    }
+    .controlButtons {
+      button {
+        color: whitesmoke;
+        border-color: whitesmoke;
+      }
+    }
   }
 
   &.fullSize {
+    max-width: 800px;
+    width: 800px;
+
     .imgContainer {
       a {
         max-height: unset;
@@ -65,6 +96,10 @@ export default {
   .memeTitle {
     font-style: italic;
     margin-bottom: 15px;
+
+    a {
+      text-decoration: none;
+    }
   }
   .imgContainer {
     height: 100%;
@@ -87,15 +122,20 @@ export default {
       width: 100%;
     }
   }
-  .details {
+  .bottomInfo {
     display: flex;
-    font-size: .9rem;
-    .author {
-      font-weight: bold;
+
+    .details {
       flex-grow: 1;
-    }
-    .timestamp {
-      color: gray;
+      display: flex;
+      flex-direction: column;
+      font-size: .9rem;
+      .author {
+        flex-grow: 1;
+      }
+      .timestamp {
+        color: gray;
+      }
     }
   }
   .controlButtons {
@@ -103,17 +143,14 @@ export default {
     justify-content: flex-end;
     margin: 5px 0;
     button {
-      font-family: 'Fira Code', sans-serif;
+      font-family: 'Asap', sans-serif;
       cursor: pointer;
       outline: none;
-      border: 1px solid gray;
-      border-radius: 5px;
+      border: 1px solid #333;
       padding: 5px;
       background: transparent;
-      &:hover {
-        background: rgba(255, 0, 0, .3);
-      }
     }
   }
 }
+
 </style>

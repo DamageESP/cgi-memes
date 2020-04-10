@@ -1,40 +1,41 @@
 <template>
-  <div class="addMemeModal" :class="{ open: showAddMemeModal }">
-    <div class="addMemeForm">
-      <span v-if="uploaded" class="successMessage">Tu meme ha sido subido correctamente. Ahora te enviaremos un email para confirmarlo. Mientras no sea confirmado, no se verá en la lista de memes</span>
-      <template v-else>
-        <div>
-          <div class="formGroup">
-            <label for="memeFile">Archivo (solo .png y .jpg)</label>
-            <input type="file" name="memeFile" id="memeFile" @change="processFile($event)">
-          </div>
-          <div class="formGroup">
-            <label for="memeAuthorEmail">Email del autor*</label>
-            <input type="text" name="memeAuthorEmail" id="memeAuthorEmail" v-model="memeAuthorEmail" placeholder="Privado. Solo emails @cgi.com">
-          </div>
-          <div class="formGroup">
-            <label for="memeAuthorName">Nombre del autor (opcional)</label>
-            <input type="text" name="memeAuthorName" id="memeAuthorName" v-model="memeAuthorName" placeholder="Público">
-          </div>
-          <div class="formGroup">
-            <label for="memeTitle">Título del meme (opcional)</label>
-            <input type="text" name="memeTitle" id="memeTitle" v-model="memeTitle" placeholder="Público">
-          </div>
+  <Modal :open="showAddMemeModal">
+    <h3>Subir meme</h3>
+    <span v-if="uploaded" class="successMessage">Tu meme ha sido subido correctamente. Ahora te enviaremos un email para confirmarlo. Mientras no sea confirmado, no se verá en la lista de memes</span>
+    <template v-else>
+      <div>
+        <div class="formGroup">
+          <label for="memeFile">Archivo (solo .png y .jpg)</label>
+          <input type="file" name="memeFile" id="memeFile" @change="processFile($event)">
         </div>
-        <button type="button" class="submitMemeButton" @click="subirMeme()">subir momaso</button>
-      </template>
-      <button type="button" class="cancelButton" @click="toggleAddMemeModal(false)">{{ uploaded ? 'cerrar' : 'cancelar' }}</button>
-      <button type="button" @click="uploaded = false" v-if="uploaded">subir otro</button>
-    </div>
-  </div>
+        <div class="formGroup">
+          <label for="memeAuthorEmail">Email del autor*</label>
+          <input type="text" name="memeAuthorEmail" id="memeAuthorEmail" v-model="memeAuthorEmail" placeholder="Privado. Solo emails @cgi.com">
+        </div>
+        <div class="formGroup">
+          <label for="memeAuthorName">Nombre del autor (opcional)</label>
+          <input type="text" name="memeAuthorName" id="memeAuthorName" v-model="memeAuthorName" placeholder="Público">
+        </div>
+        <div class="formGroup">
+          <label for="memeTitle">Título del meme (opcional)</label>
+          <input type="text" name="memeTitle" id="memeTitle" v-model="memeTitle" placeholder="Público">
+        </div>
+      </div>
+      <button type="button" class="submitMemeButton" @click="subirMeme()">subir momaso</button>
+    </template>
+    <button type="button" class="cancelButton" @click="toggleAddMemeModal(false)">{{ uploaded ? 'cerrar' : 'cancelar' }}</button>
+    <button type="button" @click="uploaded = false" v-if="uploaded">subir otro</button>
+  </Modal>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
 import api from '../lib/api'
+import Modal from './Modal'
 
 export default {
   name: 'AddMemeModal',
+  components: { Modal },
   data () {
     return {
       memeFile: '',
@@ -81,58 +82,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.addMemeModal {
-  display: none;
-  position: fixed;
+.successMessage {
+  margin-bottom: 15px;
+}
+.formGroup {
+  padding: 10px;
+  display: flex;
   flex-direction: column;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(rgba(255, 255, 255, .3), rgba(0, 0, 0, .8));
 
-  &.open {
-    display: flex;
-    justify-content: center;
+  @media screen and (min-width: 1024px) {
     align-items: center;
+    flex-direction: row;
   }
-
-  .addMemeForm {
-    background: white;
-    border:  2px solid gray;
-    border-radius: 5px;
-    box-shadow: 0 0 100px 15px rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    max-width: 100vw;
-    width: 100vw;
-    box-sizing: border-box;
-
-    @media screen and (min-width: 1024px) {
-      max-width: 600px;
-    }
-
-    .successMessage {
-      margin-bottom: 15px;
-    }
-    .formGroup {
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-
-      @media screen and (min-width: 1024px) {
-        align-items: center;
-        flex-direction: row;
-      }
-      & > * {
-        flex-basis: 50%;
-      }
-    }
-    .cancelButton {
-      background: rgba(255, 0, 0, .2);
-      margin: 5px 0;
-    }
+  & > * {
+    flex-basis: 50%;
   }
+}
+.cancelButton {
+  background: magenta;
+  margin: 5px 0;
 }
 </style>

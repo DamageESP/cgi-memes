@@ -1,22 +1,19 @@
 <template>
   <div id="app">
     <div class="headerContainer">
-      <h1 @click="loadAllMemes">
+      <div class="siteName">
+        <h1 @click="loadAllMemes">
         <router-link to="/">CGI Memes</router-link>
       </h1>
-      <span class="help">
-        <i class="icon">ℹ️</i>
-        <span>¿Cómo funciona?</span>
-        <div class="infoModal">
-          <div class="infoModalContent">
-            <ol>
-              <li>Sólo miembros de CGI pueden votar y añadir nuevos memes</li>
-              <li>Todas las acciones (subir meme, votar meme) se confirmarán a través de mail</li>
-            </ol>
-          </div>
-        </div>
-      </span>
-      <button type="button" class="subirMemeCTA" @click="toggleAddMemeModal(true)">Subir meme</button>
+      </div>
+      <button type="button" @click="toggleAppInfoModal(true)">
+        <span class="buttonIcon">❔</span>
+        <span class="buttonText">¿Cómo funciona?</span>
+      </button>
+      <button type="button" class="subirMemeCTA" @click="toggleAddMemeModal(true)">
+        <span class="buttonIcon">📢</span>
+        <span class="buttonText">Subir meme</span>
+      </button>
     </div>
     <div class="msgsContainer" v-if="error || msg">
       <span class="error" v-if="error"><strong>Error:</strong> {{ error }}</span>
@@ -25,18 +22,20 @@
     <router-view />
     <AddMemeModal />
     <VoteMemeModal />
+    <AppInfoModal />
   </div>
 </template>
 
 <script>
 import AddMemeModal from './components/AddMemeModal'
 import VoteMemeModal from './components/VoteMemeModal'
+import AppInfoModal from './components/AppInfoModal'
 
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'App',
-  components: { AddMemeModal, VoteMemeModal },
+  components: { AddMemeModal, VoteMemeModal, AppInfoModal },
   computed: {
     ...mapState(['msg', 'error'])
   },
@@ -47,7 +46,7 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(['toggleAddMemeModal']),
+    ...mapMutations(['toggleAddMemeModal', 'toggleAppInfoModal']),
     ...mapActions(['loadAllMemes'])
   }
 }
@@ -64,10 +63,10 @@ html, body {
   overflow-x: hidden;
 }
 #app {
-  font-family: 'Fira Code', monospace, sans-serif;
+  font-family: 'Asap', monospace, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  max-width: 800px;
+  width: 95%;
   margin: 0 auto;
   color: #333;
   padding: 10px;
@@ -83,60 +82,22 @@ html, body {
     margin-bottom: 30px;
     flex-wrap: wrap;
 
-    @media screen and (min-width: 362px) {
+    @media screen and (min-width: 1024px) {
       flex-wrap: nowrap;
     }
 
-    h1 {
+    .siteName {
       flex-grow: 1;
-      font-size: 16px;
-      white-space: nowrap;
-      
-      @media screen and (min-width: 1024px) {
-        font-size: 24px;
+      display: flex;
+
+      h1 {
+        white-space: nowrap;
+        word-break: break-all;
       }
     }
 
     .help {
       color: lightsteelblue;
-      order: 2;
-
-      @media screen and (min-width: 362px) {
-        order: unset;
-      }
-
-      &:hover .infoModal {
-        visibility: visible;
-      }
-    }
-    .infoModal {
-      position: relative;
-      visibility: hidden;
-      color: #333;
-
-      .infoModalContent {
-        position: absolute;
-        border: 2px solid #e0e0e0;
-        border-radius: 5px;
-        background: white;
-        padding: 5px;
-        margin-left: -7px;
-        margin-top: 5px;
-        width: 300px;
-
-        @media screen and (min-width: 362px) {
-          margin-left: -70px;
-        }
-
-        @media screen and (min-width: 1024px) {
-          margin-left: -150px;
-          margin-top: 15px;
-        }
-
-        ol {
-          list-style-position: inside;
-        }
-      }
     }
   }
   .msgsContainer {
@@ -145,29 +106,61 @@ html, body {
     margin-bottom: 25px;
 
     .error, .msg {
-      border-radius: 5px;
       padding: 20px;
       margin: 10px;
       border: 2px solid #e6e6e6;
       color: #333;
     }
     .error {
-      color: red;
-      background: rgba(255, 0, 0, .2);
+      color: #333;
+      background: magenta
     }
     .msg {
       color: blue;
-      background: rgba(0, 0, 255, .2);
+      background: cyan
 
     }
   }
   .subirMemeCTA {
-    margin-left: 20px;
+    margin-left: 5px;
+
+    .buttonText {
+      display: flex;
+    }
+
+    @media screen and (min-width: 1024px) {
+      margin-left: 20px;
+    }
+  }
+}
+h1, h2, h3, h4 {
+  font-family: 'Prompt', sans-serif;
+  background: #333;
+  color: whitesmoke;
+  padding: 0 2px;
+
+  &:hover {
+    a {
+      background: linear-gradient(45deg, red, magenta);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  a {
+    color: whitesmoke;
+    text-decoration: none;
   }
 }
 button {
+  transition: transform .025s ease-in-out;
+
   &:hover {
-    background: rgba(0, 0, 0, .1);
+    background: linear-gradient(45deg, red, magenta);
+    color: white;
+    border: none;
+    transform: scale(1.4) rotate3d(0, 0, 1, 2deg);
   }
   &.linkButton {
     border: none;
@@ -187,13 +180,31 @@ input[type="email"],
 input[type="number"],
 button,
 select {
-  font-family: 'Fira Code', sans-serif;
-  cursor: pointer;
+  font-family: 'Asap', sans-serif;
   outline: none;
   border: 1px solid gray;
-  border-radius: 5px;
   padding: 5px;
   background: transparent;
   font-size: inherit;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  .buttonText {
+    display: none;
+    margin-left: 5px;
+
+    @media screen and (min-width: 1024px) {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+button,
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
 }
 </style>

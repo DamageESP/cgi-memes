@@ -57,13 +57,21 @@ export default {
 
 .gallery {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(1, 1fr);
   transition: all .5s ease-in-out;
   column-gap: 10px;
   row-gap: 10px;
 
-  @media screen and (min-width: 1024px) {
-    grid-template-columns: .5fr .5fr;
+  @media screen and (min-width: 800px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (min-width: 1260px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media screen and (min-width: 1600px) {
+    grid-template-columns: repeat(4, 1fr);
     column-gap: 20px;
     row-gap: 20px;
   }

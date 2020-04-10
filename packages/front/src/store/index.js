@@ -11,6 +11,7 @@ export default new Vuex.Store({
     loadingMemes: false,
     showAddMemeModal: false,
     showVoteMemeModal: false,
+    showAppInfoModal: false,
     msg: '',
     error: ''
   },
@@ -44,6 +45,9 @@ export default new Vuex.Store({
     },
     toggleVoteMemeModal (state, modalShown) {
       state.showVoteMemeModal = modalShown
+    },
+    toggleAppInfoModal (state, modalShown) {
+      state.showAppInfoModal = modalShown
     },
     memeUpvoted (state, memeId) {
       state.memes.find(m => m.id === memeId).likes += 1
