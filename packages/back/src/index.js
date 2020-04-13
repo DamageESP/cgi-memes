@@ -24,6 +24,13 @@ const memeConfirmationMail = (memeTitle, actionId) => {
   }
 }
 
+const deleteConfirmationMail = (memeTitle, actionId) => {
+  return {
+    subject: `${process.env.NODE_ENV !== 'production' ? '[DESARROLLO] ' : ''}💀❌ ELIMINA el meme "${memeTitle}" ❌💀`,
+    html: `<p>Sin comentarios. Dale al link para terminar rápido. Y no me hables. ➡️ <a href="${process.env.FRONT_URL}/#/confirm/${actionId}">Eliminar meme 🔗</a></p>`,
+  }
+}
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -58,6 +65,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 const getMeme = async memeId => {
   
   const [[meme]] = await pool.query('SELECT SUM(IF(meme_likes.confirmed=1, 1, 0)) as likes, memes.id, memes.title, memes.src, memes.authorName, memes.authorEmail, memes.createdAt FROM memes  LEFT JOIN meme_likes ON memes.id = meme_likes.memeId WHERE memes.confirmed=1 AND memes.id=? GROUP BY memes.id', [memeId])
+  if(!meme) return false
   meme.src = `https://${process.env.VIRTUAL_HOST}${meme.src}`
   return meme
 }
@@ -85,6 +93,12 @@ const sendMail = async (email, type, memeTitle, actionId) => {
         to: process.env.NODE_ENV === 'production' ? email : process.env.EMAIL_ACCOUNT_USERNAME, // list of receivers
         ...likeConfirmationMail(memeTitle, actionId)
       })
+    } else if (type === 'delete') {
+      await transporter.sendMail({
+        from: `"CGI Memes 🍑" <${process.env.EMAIL_ACCOUNT_USERNAME}>`, // sender address
+        to: process.env.NODE_ENV === 'production' ? email : process.env.EMAIL_ACCOUNT_USERNAME, // list of receivers
+        ...deleteConfirmationMail(memeTitle, actionId)
+      })
     }
     return false
   } catch (err) {
@@ -111,12 +125,14 @@ const consumeAction = async actionId => {
   if (!action) return false
   if (action.type === 'like') {
     await pool.query('UPDATE meme_likes SET confirmed=1 WHERE id=?', [action.itemId])
-    await pool.query('UPDATE actions SET consumedAt=? WHERE actionId=?', [Date.now(), actionId])
   } else if (action.type === 'upload') {
     await pool.query('UPDATE memes SET confirmed=1 WHERE id=?', [action.itemId])
-    await pool.query('UPDATE actions SET consumedAt=? WHERE actionId=?', [Date.now(), actionId])
+  } else if (action.type === 'delete') {
+    // Testear en PROD: que pasa si quito el WHERE? 🤔
+    await pool.query('DELETE FROM memes WHERE id=?', [action.itemId])
   }
-  return true
+  await pool.query('UPDATE actions SET consumedAt=? WHERE actionId=?', [Date.now(), actionId])
+  return action.type
 }
 
 app.get('/gallery', async (req, res) => {
@@ -196,9 +212,27 @@ app.get('/meme/:memeId', async (req, res) => {
   res.json(meme)
 })
 
+app.delete('/meme/:memeId', async (req, res) => {
+  const authorEmail = req.body.authorEmail
+  if (!validateEmail(authorEmail)) return res.status(401).send('only cgi email addresses are allowed')
+  const meme = await getMeme(req.params.memeId)
+  if (!meme) return res.status(404).send('meme not found')
+  if (meme.authorEmail !== authorEmail) return res.status(400).send('me parece fatal que intentes borrar el meme de un colega... -1 respect y reportado')
+  const [[deletionInProgress]] = await pool.query('SELECT id FROM actions WHERE type=? AND itemId=?', ['delete', req.params.memeId])
+  if (deletionInProgress) {
+    return res.status(401).send('ya hay una solicitud en curso para eliminar este meme. revisa tu correo o contacta con el dev (victor)')
+  }
+  const actionId = await createAction('delete', req.params.memeId)
+  sendMail(authorEmail, 'delete', meme.title, actionId)
+  res.status(200).send('ok')
+})
+
 app.get('/confirm/:actionId', async (req, res) => {
   const actionConsumed = await consumeAction(req.params.actionId)
-  if (actionConsumed) res.send('ok')
+  if (actionConsumed) res.json({
+    status: 'ok',
+    actionType: actionConsumed,
+  })
   else res.status(500).send('no se ha podido confirmar la acción')
 })
 

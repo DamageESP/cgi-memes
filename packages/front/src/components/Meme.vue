@@ -13,7 +13,10 @@
       <div class="controlButtons">
         <button type="button" title="Me gusta" @click="likeMeme()">
           <span class="icon">❤️</span>
-          <span class="totalLikes">({{ meme.likes || 0 }})</span>
+          <span class="text">({{ meme.likes || 0 }})</span>
+        </button>
+        <button type="button" title="Eliminar meme" @click="deleteMeme()" v-if="fullSize">
+          <span class="icon">🗑</span>
         </button>
       </div>
     </div>
@@ -26,10 +29,14 @@ import { mapMutations } from 'vuex'
 export default {
   name: 'Meme',
   methods: {
-    ...mapMutations(['toggleVoteMemeModal', 'setSelectedMeme']),
+    ...mapMutations(['toggleVoteMemeModal', 'toggleDeleteMemeModal', 'setSelectedMeme']),
     likeMeme () {
       this.setSelectedMeme(this.meme.id)
       this.toggleVoteMemeModal(true)
+    },
+    deleteMeme () {
+      this.setSelectedMeme(this.meme.id)
+      this.toggleDeleteMemeModal(true)
     }
   },
   filters: {
@@ -160,11 +167,16 @@ export default {
       align-items: center;
       justify-content: center;
 
+      &:not(:last-child) {
+        margin-right: 5px;
+      }
       .icon {
-          width: 20px;
-          height: 20px;
-          margin-right: 10px;
-        }
+        width: 20px;
+        height: 20px;
+      }
+      .text {
+        margin-left: 7px;
+      }
     }
   }
 }

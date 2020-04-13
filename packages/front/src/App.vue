@@ -23,6 +23,7 @@
     <AddMemeModal />
     <VoteMemeModal />
     <AppInfoModal />
+    <DeleteMemeModal />
   </div>
 </template>
 
@@ -30,12 +31,13 @@
 import AddMemeModal from './components/AddMemeModal'
 import VoteMemeModal from './components/VoteMemeModal'
 import AppInfoModal from './components/AppInfoModal'
+import DeleteMemeModal from './components/DeleteMemeModal'
 
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'App',
-  components: { AddMemeModal, VoteMemeModal, AppInfoModal },
+  components: { AddMemeModal, VoteMemeModal, AppInfoModal, DeleteMemeModal },
   computed: {
     ...mapState(['msg', 'error'])
   },

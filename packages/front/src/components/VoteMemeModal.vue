@@ -1,6 +1,6 @@
 <template>
   <Modal :open="showVoteMemeModal">
-    <h3>Votar el meme de {{ memeBeingVoted.authorName }}</h3>
+    <h3>Votar este meme</h3>
     <span v-if="liked" class="successMessage">Tu voto ha sido contabilizado correctamente. Ahora te enviaremos un email para confirmarlo. Mientras no sea confirmado, no contará de cara al total de likes público.</span>
     <template v-if="!liked">
       <div class="formGroup">
@@ -28,12 +28,7 @@ export default {
   },
   components: { Modal },
   computed: {
-    ...mapState(['selectedMeme', 'showVoteMemeModal']),
-    memeBeingVoted: function () {
-      return this.selectedMeme ? this.selectedMeme : {
-        authorName: 'Unknown'
-      }
-    }
+    ...mapState(['selectedMeme', 'showVoteMemeModal'])
   },
   methods: {
     ...mapMutations(['toggleVoteMemeModal']),

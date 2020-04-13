@@ -15,8 +15,16 @@ export default {
   mounted () {
     api(`/confirm/${this.$route.params.actionId}`).then(r => {
       if (r.status === 200) {
-        this.setMsg('Acción confirmada correctamente! Ahora todo el mundo podrá verlo 😄👍')
-        this.loadAllMemes()
+        r.json().then(r => {
+          if (r.actionType === 'like') {
+            this.setMsg('Voto confirmado! Ahora contará para el total público. 👍')
+          } else if (r.actionType === 'upload') {
+            this.setMsg('Meme confirmado! Ahora todo el mundo podrá verlo. 👀')
+          } else if (r.actionType === 'delete') {
+            this.setMsg('Meme eliminado. No queda ni rastro de él por ningún sitio. 🔪')
+          }
+          this.loadAllMemes()
+        })
       } else {
         r.text().then(r => this.setError(r))
       }

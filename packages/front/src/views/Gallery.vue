@@ -1,14 +1,14 @@
 <template>
   <div class="galleryPage">
-    <h3 v-if="!memes.length && !loadingMemes">No hay memes todavía. <button class="linkButton" type="button" @click="toggleAddMemeModal(true)">¡Sé el primero!</button></h3>
     <h3 class="loadingMemes" v-if="loadingMemes">Cargando memes...</h3>
     <div class="facet">
       <label for="order">Orden: </label>
       <select v-model="order">
         <option value="likes" selected>Likes</option>
-        <option value="createdAt">Fecha de subida</option>
+        <option value="createdAt">Más recientes</option>
       </select>
     </div>
+    <p v-if="!memes.length && !loadingMemes">No hay memes todavía. <button class="linkButton" type="button" @click="toggleAddMemeModal(true)">¡Sé el primero!</button></p>
     <div class="gallery">
       <Meme v-for="(meme, i) in orderedMemes" :key="i" :meme="meme" />
     </div>
@@ -74,6 +74,30 @@ export default {
     grid-template-columns: repeat(4, 1fr);
     column-gap: 20px;
     row-gap: 20px;
+  }
+
+  .meme {
+    &:nth-child(1):after {
+        content: '🥇';
+        display: block;
+        font-size: 24px;
+        position: absolute;
+        left: calc(100% - 55px);
+    }
+    &:nth-child(2):after {
+        content: '🥈';
+        display: block;
+        font-size: 24px;
+        position: absolute;
+        left: calc(100% - 55px);
+    }
+    &:nth-child(3):after {
+        content: '🥉';
+        display: block;
+        font-size: 24px;
+        position: absolute;
+        left: calc(100% - 55px);
+    }
   }
 }
 </style>
