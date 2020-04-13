@@ -8,7 +8,6 @@
     </div>
     <div class="bottomInfo">
       <div class="details">
-        <span class="author"><strong>Subido por: </strong>{{ meme.authorName }}</span>
         <span class="timestamp">{{ meme.createdAt|asDate }}</span>
       </div>
       <div class="controlButtons">
@@ -86,6 +85,14 @@ export default {
     max-width: 800px;
     width: 800px;
 
+    &:hover {
+      .controlButtons {
+          button {
+            color: #333;
+            border-color: #333;
+          }
+        }
+    }
     .imgContainer {
       a {
         max-height: unset;
@@ -149,6 +156,15 @@ export default {
       border: 1px solid #333;
       padding: 5px;
       background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+        }
     }
   }
 }

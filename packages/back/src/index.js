@@ -12,14 +12,14 @@ const validateEmail = email => email.split('@') && email.split('@')[1] === 'cgi.
 
 const likeConfirmationMail = (memeTitle, actionId) => {
   return {
-    subject: `Confirma tu like al meme "${memeTitle}"👍`,
+    subject: `${process.env.NODE_ENV !== 'production' ? '[DESARROLLO] ' : ''}Confirma tu like al meme "${memeTitle}"👍`,
     html: `<p>Completa el ciclo del amor ❤️, simplemente haz clic en este enlace! ➡️ <a href="${process.env.FRONT_URL}/#/confirm/${actionId}">Confirmar voto 🔗</a></p>`,
   }
 }
 
 const memeConfirmationMail = (memeTitle, actionId) => {
   return {
-    subject: `Confirma tu meme "${memeTitle}" y empieza a hacer que lluevan los likes! 🍆`,
+    subject: `${process.env.NODE_ENV !== 'production' ? '[DESARROLLO] ' : ''}Confirma tu meme "${memeTitle}" y empieza a hacer que lluevan los likes! 🍆`,
     html: `<p>¿Estás listo para ser el/la más popular de la ofi? Estás a un solo clic... entra en este enlace! ➡️ <a href="${process.env.FRONT_URL}/#/confirm/${actionId}">Confirmar meme</a></p>`,
   }
 }
@@ -124,6 +124,7 @@ app.get('/gallery', async (req, res) => {
   if (memes.filter(m => m.id !== null).length) {
     res.json(memes.map(meme => {
       meme.src = `https://${process.env.VIRTUAL_HOST}${meme.src}`
+      delete meme.authorName
       return meme
     }))
   } else res.json([])
@@ -191,6 +192,7 @@ app.get('/meme/:memeId', async (req, res) => {
   const meme = await getMeme(req.params.memeId)
   if (!meme) return res.status(404).send('meme not found')
   delete meme.authorEmail // lil bit o privacy
+  delete meme.authorName
   res.json(meme)
 })
 
